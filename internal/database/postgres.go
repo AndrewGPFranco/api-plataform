@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
@@ -26,10 +25,4 @@ func CarregaBanco() {
 		defer cancel()
 		_ = conn.Close(context.Background())
 	}()
-
-	var version string
-	if err := conn.QueryRow(ctx, "select version()").Scan(&version); err != nil {
-		panic(err)
-	}
-	fmt.Println(version)
 }
