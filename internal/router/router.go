@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New() *gin.Engine {
+func New(projectHandler *handler.ProjectHandler) *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/ping", handler.Ping)
+	r.POST("/projects", projectHandler.CreateProject)
 
 	return r
 }

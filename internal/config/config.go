@@ -10,7 +10,8 @@ import (
 )
 
 type Config struct {
-	Port string
+	Port        string
+	DatabaseURL string
 }
 
 func Load() Config {
@@ -18,8 +19,14 @@ func Load() Config {
 		log.Fatalf("erro ao carregar .env: %v", err)
 	}
 
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL não definida")
+	}
+
 	return Config{
-		Port: getEnv("PORT", "8008"),
+		Port:        getEnv("PORT", "8008"),
+		DatabaseURL: dbURL,
 	}
 }
 
