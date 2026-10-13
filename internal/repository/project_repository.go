@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-
 	"plataform/internal/model"
 )
 
@@ -25,4 +24,31 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Pr
 		project.Title, project.Description, project.StartedAt, project.RepoFrontURL, project.RepoBackURL,
 		project.DeployFrontURL, project.DeployBackURL,
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
+}
+
+func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
+	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
+                     deploy_front_url, deploy_back_url, has_deploy, created_at, updated_at
+			  FROM projects
+			  ORDER BY created_at DESC`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	projects := []model.Project{}
+	for rows.Next() {
+		var p model.Project
+		if err := rows.Scan(
+			&p.ID, &p.Title, &p.Description, &p.StartedAt, &p.RepoFrontURL, &p.RepoBackURL,
+			&p.DeployFrontURL, &p.DeployBackURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+
+	return projects, rows.Err()
 }
