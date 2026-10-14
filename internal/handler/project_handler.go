@@ -3,28 +3,28 @@ package handler
 import (
 	"log"
 	"net/http"
-	"plataform/internal/dtos"
-	"plataform/internal/service"
+	"plataform/internal/dtos/projects"
+	projects2 "plataform/internal/service/projects"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ProjectHandler struct {
-	service *service.ProjectService
+	service *projects2.ProjectService
 }
 
-func New(service *service.ProjectService) *ProjectHandler {
+func New(service *projects2.ProjectService) *ProjectHandler {
 	return &ProjectHandler{service: service}
 }
 
 func (h *ProjectHandler) CreateProject(c *gin.Context) {
-	var req dtos.CreateProjectRequest
+	var req projects.CreateProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	project := dtos.ToEntity(req)
+	project := projects.ToEntity(req)
 
 	if err := h.service.CreateProject(c.Request.Context(), project); err != nil {
 		log.Printf("erro ao criar projeto: %v", err)

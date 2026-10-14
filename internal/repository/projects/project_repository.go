@@ -1,9 +1,9 @@
-package repository
+package projects
 
 import (
 	"context"
 	"database/sql"
-	"plataform/internal/model"
+	"plataform/internal/model/projects"
 )
 
 type ProjectRepository struct {
@@ -14,7 +14,7 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 	return &ProjectRepository{db: db}
 }
 
-func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
+func (r *ProjectRepository) CreateProject(ctx context.Context, project *projects.Project) error {
 	query := `INSERT INTO projects (title, description, started_at, repo_front_url, repo_back_url,
                       deploy_front_url, deploy_back_url)
 			  VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -26,7 +26,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Pr
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
-func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
+func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Project, error) {
 	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
                      deploy_front_url, deploy_back_url, has_deploy, created_at, updated_at
 			  FROM projects
@@ -38,9 +38,9 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, 
 	}
 	defer rows.Close()
 
-	projects := []model.Project{}
+	projects := []projects.Project{}
 	for rows.Next() {
-		var p model.Project
+		var p projects.Project
 		if err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.StartedAt, &p.RepoFrontURL, &p.RepoBackURL,
 			&p.DeployFrontURL, &p.DeployBackURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,

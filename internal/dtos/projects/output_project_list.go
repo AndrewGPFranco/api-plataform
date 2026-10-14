@@ -1,7 +1,7 @@
-package dtos
+package projects
 
 import (
-	"plataform/internal/model"
+	"plataform/internal/model/projects"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,7 +21,7 @@ type OutputProjectList struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-func FromEntity(entities []model.Project) []OutputProjectList {
+func FromEntity(entities []projects.Project) []OutputProjectList {
 	list := make([]OutputProjectList, len(entities))
 
 	for index, project := range entities {

@@ -1,7 +1,7 @@
-package dtos
+package projects
 
 import (
-	"plataform/internal/model"
+	"plataform/internal/model/projects"
 	"time"
 )
 
@@ -15,10 +15,10 @@ type CreateProjectRequest struct {
 	DeployBackURL  *string `json:"deploy_back_url" binding:"omitempty,url"`
 }
 
-func ToEntity(dto CreateProjectRequest) *model.Project {
+func ToEntity(dto CreateProjectRequest) *projects.Project {
 	startedAt, _ := time.Parse(time.DateOnly, dto.StartedAt)
 
-	project := &model.Project{
+	project := &projects.Project{
 		Title:          dto.Title,
 		Description:    dto.Description,
 		StartedAt:      startedAt,

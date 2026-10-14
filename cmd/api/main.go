@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
+	"plataform/internal/repository/projects"
+	projects2 "plataform/internal/service/projects"
 
 	"plataform/internal/config"
 	"plataform/internal/database"
 	"plataform/internal/handler"
-	"plataform/internal/repository"
 	"plataform/internal/router"
-	"plataform/internal/service"
 )
 
 func main() {
@@ -20,8 +20,8 @@ func main() {
 	}
 	defer db.Close()
 
-	projectRepo := repository.NewProjectRepository(db)
-	projectService := service.NewProjectService(projectRepo)
+	projectRepo := projects.NewProjectRepository(db)
+	projectService := projects2.NewProjectService(projectRepo)
 	projectHandler := handler.New(projectService)
 
 	r := router.New(projectHandler)
