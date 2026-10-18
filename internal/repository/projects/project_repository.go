@@ -38,7 +38,7 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Projec
 	}
 	defer rows.Close()
 
-	projects := []projects.Project{}
+	currentProjects := []projects.Project{}
 	for rows.Next() {
 		var p projects.Project
 		if err := rows.Scan(
@@ -47,8 +47,8 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Projec
 		); err != nil {
 			return nil, err
 		}
-		projects = append(projects, p)
+		currentProjects = append(currentProjects, p)
 	}
 
-	return projects, rows.Err()
+	return currentProjects, rows.Err()
 }
