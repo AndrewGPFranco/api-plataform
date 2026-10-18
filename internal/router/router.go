@@ -11,6 +11,7 @@ func New(projectHandler *handler.ProjectHandler) *gin.Engine {
 
 	r.POST("/projects", projectHandler.CreateProject)
 	r.GET("/projects", projectHandler.ListProjects)
+	r.DELETE("/projects/:id", projectHandler.DeleteProject)
 
 	return r
 }

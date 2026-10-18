@@ -3,7 +3,10 @@ package projects
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"plataform/internal/model/projects"
+
+	"github.com/google/uuid"
 )
 
 type ProjectRepository struct {
@@ -51,4 +54,21 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Projec
 	}
 
 	return currentProjects, rows.Err()
+}
+
+func (r *ProjectRepository) DeleteProject(id uuid.UUID) error {
+	res, err := r.db.Exec(`DELETE FROM projects WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("deletar projeto %s: %w", id, err)
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("verificar linhas afetadas: %w", err)
+	}
+	if n == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }

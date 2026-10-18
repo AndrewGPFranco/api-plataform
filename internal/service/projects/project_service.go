@@ -5,6 +5,8 @@ import (
 	"plataform/internal/dtos/projects"
 	projects2 "plataform/internal/model/projects"
 	projects3 "plataform/internal/repository/projects"
+
+	"github.com/google/uuid"
 )
 
 type ProjectService struct {
@@ -26,4 +28,8 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]projects.OutputPro
 	}
 
 	return projects.FromEntity(projectsCurrents), nil
+}
+
+func (s *ProjectService) DeleteProject(id uuid.UUID) error {
+	return s.repo.DeleteProject(id)
 }

@@ -7,6 +7,7 @@ import (
 	projects2 "plataform/internal/service/projects"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ProjectHandler struct {
@@ -44,4 +45,19 @@ func (h *ProjectHandler) ListProjects(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, projects)
+}
+
+func (h *ProjectHandler) DeleteProject(c *gin.Context) {
+	id := c.Param("id")
+
+	idParse := uuid.MustParse(id)
+
+	err := h.service.DeleteProject(idParse)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Não foi possivel excluir o projeto."})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Projeto deletado com sucesso!")
 }
