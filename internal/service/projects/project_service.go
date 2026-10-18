@@ -3,21 +3,22 @@ package projects
 import (
 	"context"
 	"plataform/internal/dtos/projects"
-	projects2 "plataform/internal/model/projects"
-	projects3 "plataform/internal/repository/projects"
+	dtos "plataform/internal/dtos/projects"
+	model "plataform/internal/model/projects"
+	repository "plataform/internal/repository/projects"
 
 	"github.com/google/uuid"
 )
 
 type ProjectService struct {
-	repo *projects3.ProjectRepository
+	repo *repository.ProjectRepository
 }
 
-func NewProjectService(repo *projects3.ProjectRepository) *ProjectService {
+func NewProjectService(repo *repository.ProjectRepository) *ProjectService {
 	return &ProjectService{repo: repo}
 }
 
-func (s *ProjectService) CreateProject(ctx context.Context, project *projects2.Project) error {
+func (s *ProjectService) CreateProject(ctx context.Context, project *model.Project) error {
 	return s.repo.CreateProject(ctx, project)
 }
 
@@ -32,4 +33,8 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]projects.OutputPro
 
 func (s *ProjectService) DeleteProject(id uuid.UUID) error {
 	return s.repo.DeleteProject(id)
+}
+
+func (s *ProjectService) EditProject(req *dtos.EditProject) error {
+	return s.repo.EditProject(req)
 }

@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"plataform/internal/model/projects"
+	"log"
+	dtos "plataform/internal/dtos/projects"
+	model "plataform/internal/model/projects"
 
 	"github.com/google/uuid"
 )
@@ -17,7 +19,7 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 	return &ProjectRepository{db: db}
 }
 
-func (r *ProjectRepository) CreateProject(ctx context.Context, project *projects.Project) error {
+func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
 	query := `INSERT INTO projects (title, description, started_at, repo_front_url, repo_back_url,
                       deploy_front_url, deploy_back_url)
 			  VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -29,7 +31,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *projects
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
-func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Project, error) {
+func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
 	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
                      deploy_front_url, deploy_back_url, has_deploy, created_at, updated_at
 			  FROM projects
@@ -41,9 +43,9 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]projects.Projec
 	}
 	defer rows.Close()
 
-	currentProjects := []projects.Project{}
+	currentProjects := []model.Project{}
 	for rows.Next() {
-		var p projects.Project
+		var p model.Project
 		if err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.StartedAt, &p.RepoFrontURL, &p.RepoBackURL,
 			&p.DeployFrontURL, &p.DeployBackURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,
@@ -68,6 +70,19 @@ func (r *ProjectRepository) DeleteProject(id uuid.UUID) error {
 	}
 	if n == 0 {
 		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
+func (r *ProjectRepository) EditProject(p *dtos.EditProject) error {
+	_, err := r.db.Exec(`update projects set title = $1, description = $2, started_at = $3, repo_front_url = $4,
+                    repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7 where id = $8`,
+		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.Id)
+
+	if err != nil {
+		log.Println(err)
+		return err
 	}
 
 	return nil

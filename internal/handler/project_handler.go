@@ -3,29 +3,29 @@ package handler
 import (
 	"log"
 	"net/http"
-	"plataform/internal/dtos/projects"
-	projects2 "plataform/internal/service/projects"
+	dtos "plataform/internal/dtos/projects"
+	services "plataform/internal/service/projects"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type ProjectHandler struct {
-	service *projects2.ProjectService
+	service *services.ProjectService
 }
 
-func New(service *projects2.ProjectService) *ProjectHandler {
+func New(service *services.ProjectService) *ProjectHandler {
 	return &ProjectHandler{service: service}
 }
 
 func (h *ProjectHandler) CreateProject(c *gin.Context) {
-	var req projects.CreateProjectRequest
+	var req dtos.CreateProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	project := projects.ToEntity(req)
+	project := dtos.ToEntity(req)
 
 	if err := h.service.CreateProject(c.Request.Context(), project); err != nil {
 		log.Printf("erro ao criar projeto: %v", err)
@@ -60,4 +60,20 @@ func (h *ProjectHandler) DeleteProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "Projeto deletado com sucesso!")
+}
+
+func (h *ProjectHandler) EditProject(c *gin.Context) {
+	var req dtos.EditProject
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if err := h.service.EditProject(&req); err != nil {
+		log.Printf("erro ao atualizar projeto: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Ocorreu um erro ao atualizar os metadados."})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Metadados atualizados.")
 }
