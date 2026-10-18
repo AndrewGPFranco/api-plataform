@@ -21,19 +21,19 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 
 func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
 	query := `INSERT INTO projects (title, description, started_at, repo_front_url, repo_back_url,
-                      deploy_front_url, deploy_back_url)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7)
+                      deploy_front_url, deploy_back_url, localhost_url)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 			  RETURNING id, has_deploy, created_at, updated_at`
 
 	return r.db.QueryRowContext(ctx, query,
 		project.Title, project.Description, project.StartedAt, project.RepoFrontURL, project.RepoBackURL,
-		project.DeployFrontURL, project.DeployBackURL,
+		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL,
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
 func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
 	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
-                     deploy_front_url, deploy_back_url, has_deploy, created_at, updated_at
+                     deploy_front_url, deploy_back_url, localhost_url, has_deploy, created_at, updated_at
 			  FROM projects
 			  ORDER BY created_at DESC`
 
@@ -48,7 +48,7 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, 
 		var p model.Project
 		if err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.StartedAt, &p.RepoFrontURL, &p.RepoBackURL,
-			&p.DeployFrontURL, &p.DeployBackURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,
+			&p.DeployFrontURL, &p.DeployBackURL, &p.LocalhostURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -77,8 +77,8 @@ func (r *ProjectRepository) DeleteProject(id uuid.UUID) error {
 
 func (r *ProjectRepository) EditProject(p *dtos.EditProject) error {
 	_, err := r.db.Exec(`update projects set title = $1, description = $2, started_at = $3, repo_front_url = $4,
-                    repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7 where id = $8`,
-		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.Id)
+                    repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7, localhost_url = $8 where id = $9`,
+		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.LocalhostURL, p.Id)
 
 	if err != nil {
 		log.Println(err)

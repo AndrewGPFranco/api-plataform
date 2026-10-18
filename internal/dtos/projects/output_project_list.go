@@ -16,6 +16,7 @@ type OutputProjectList struct {
 	RepoBackURL    *string   `json:"repo_back_url"`
 	DeployFrontURL *string   `json:"deploy_front_url"`
 	DeployBackURL  *string   `json:"deploy_back_url"`
+	LocalhostURL   *string   `json:"localhost_url"`
 	HasDeploy      bool      `json:"has_deploy"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -34,6 +35,7 @@ func FromEntity(entities []projects.Project) []OutputProjectList {
 			RepoBackURL:    project.RepoBackURL,
 			DeployFrontURL: project.DeployFrontURL,
 			DeployBackURL:  project.DeployBackURL,
+			LocalhostURL:   project.LocalhostURL,
 			HasDeploy:      project.HasDeploy,
 			CreatedAt:      project.CreatedAt,
 			UpdatedAt:      project.UpdatedAt,

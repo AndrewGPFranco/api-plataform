@@ -15,6 +15,7 @@ type Project struct {
 	RepoBackURL    *string   `json:"repo_back_url"`
 	DeployFrontURL *string   `json:"deploy_front_url"`
 	DeployBackURL  *string   `json:"deploy_back_url"`
+	LocalhostURL   *string   `json:"localhost_url"`
 	HasDeploy      bool      `json:"has_deploy"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
