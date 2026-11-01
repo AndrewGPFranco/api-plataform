@@ -3,7 +3,7 @@ package projects
 import "github.com/google/uuid"
 
 type EditProject struct {
-	Id             uuid.UUID `json:"id"`
+	ID             uuid.UUID `json:"id"`
 	Title          string    `json:"title"`
 	Description    *string   `json:"description"`
 	StartedAt      string    `json:"started_at"`

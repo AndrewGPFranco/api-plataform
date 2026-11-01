@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
 	dtos "plataform/internal/dtos/projects"
 	model "plataform/internal/model/projects"
 
@@ -78,8 +79,7 @@ func (r *ProjectRepository) DeleteProject(id uuid.UUID) error {
 func (r *ProjectRepository) EditProject(p *dtos.EditProject) error {
 	_, err := r.db.Exec(`update projects set title = $1, description = $2, started_at = $3, repo_front_url = $4,
                     repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7, localhost_url = $8 where id = $9`,
-		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.LocalhostURL, p.Id)
-
+		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.LocalhostURL, p.ID)
 	if err != nil {
 		log.Println(err)
 		return err

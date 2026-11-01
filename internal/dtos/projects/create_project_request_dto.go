@@ -1,8 +1,9 @@
 package projects
 
 import (
-	"plataform/internal/model/projects"
 	"time"
+
+	"plataform/internal/model/projects"
 )
 
 type CreateProjectRequest struct {
