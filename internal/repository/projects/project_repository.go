@@ -22,13 +22,13 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 
 func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
 	query := `INSERT INTO projects (title, description, started_at, repo_front_url, repo_back_url,
-                      deploy_front_url, deploy_back_url, localhost_url)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                      deploy_front_url, deploy_back_url, localhost_url, startup_script)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 			  RETURNING id, has_deploy, created_at, updated_at`
 
 	return r.db.QueryRowContext(ctx, query,
 		project.Title, project.Description, project.StartedAt, project.RepoFrontURL, project.RepoBackURL,
-		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL,
+		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL, project.StartupScript,
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
@@ -78,8 +78,8 @@ func (r *ProjectRepository) DeleteProject(id uuid.UUID) error {
 
 func (r *ProjectRepository) EditProject(p *dtos.EditProject) error {
 	_, err := r.db.Exec(`update projects set title = $1, description = $2, started_at = $3, repo_front_url = $4,
-                    repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7, localhost_url = $8 where id = $9`,
-		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.LocalhostURL, p.ID)
+                    repo_back_url = $5, deploy_front_url = $6, deploy_back_url = $7, localhost_url = $8, startup_script = $9 where id = $10`,
+		p.Title, p.Description, p.StartedAt, p.RepoFrontURL, p.RepoBackURL, p.DeployFrontURL, p.DeployBackURL, p.LocalhostURL, p.ID, p.StartupScript)
 	if err != nil {
 		log.Println(err)
 		return err
