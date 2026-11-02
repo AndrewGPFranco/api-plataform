@@ -13,6 +13,7 @@ func New(projectHandler *handler.ProjectHandler) *gin.Engine {
 	r.GET("/projects", projectHandler.ListProjects)
 	r.DELETE("/projects/delete/:id", projectHandler.DeleteProject)
 	r.PUT("/projects/edit/:id", projectHandler.EditProject)
+	r.POST("/projects/start/:id", projectHandler.StartProjectLocal)
 
 	return r
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+
 	dtos "plataform/internal/dtos/projects"
 	services "plataform/internal/service/projects"
 
@@ -53,7 +54,6 @@ func (h *ProjectHandler) DeleteProject(c *gin.Context) {
 	idParse := uuid.MustParse(id)
 
 	err := h.service.DeleteProject(idParse)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Não foi possivel excluir o projeto."})
 		return
@@ -76,4 +76,17 @@ func (h *ProjectHandler) EditProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "Metadados atualizados.")
+}
+
+func (h *ProjectHandler) StartProjectLocal(c *gin.Context) {
+	id := c.Param("id")
+	idParse := uuid.MustParse(id)
+
+	response, err := h.service.StartProjectLocalhost(c, idParse)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

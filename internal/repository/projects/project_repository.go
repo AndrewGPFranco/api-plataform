@@ -87,3 +87,15 @@ func (r *ProjectRepository) EditProject(p *dtos.EditProject) error {
 
 	return nil
 }
+
+func (r *ProjectRepository) FindCommandByProjectID(ctx context.Context, id uuid.UUID) (*string, error) {
+	var command *string
+
+	err := r.db.QueryRowContext(ctx, `select startup_script from projects where id = $1`, id).Scan(&command)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return command, nil
+}
