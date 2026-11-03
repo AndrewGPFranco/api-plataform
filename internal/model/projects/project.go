@@ -19,5 +19,4 @@ type Project struct {
 	HasDeploy      bool      `json:"has_deploy"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-	StartupScript  *string   `json:"startup_script"`
 }
