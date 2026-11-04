@@ -28,7 +28,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Pr
 
 	return r.db.QueryRowContext(ctx, query,
 		project.Title, project.Description, project.StartedAt, project.RepoFrontURL, project.RepoBackURL,
-		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL, project.StartupScript,
+		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL,
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 

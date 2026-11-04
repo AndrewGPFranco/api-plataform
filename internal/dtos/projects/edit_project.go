@@ -12,5 +12,4 @@ type EditProject struct {
 	DeployFrontURL *string   `json:"deploy_front_url" binding:"omitempty,url"`
 	DeployBackURL  *string   `json:"deploy_back_url" binding:"omitempty,url"`
 	LocalhostURL   *string   `json:"localhost_url" binding:"omitempty,url"`
-	StartupScript  *string   `json:"startup_script"`
 }
