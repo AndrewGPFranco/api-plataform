@@ -9,11 +9,15 @@ import (
 func New(projectHandler *handler.ProjectHandler, startupHandler *handler.StartupScriptHandler) *gin.Engine {
 	r := gin.Default()
 
+	// Projects
 	r.POST("/projects", projectHandler.CreateProject)
 	r.GET("/projects", projectHandler.ListProjects)
 	r.DELETE("/projects/delete/:id", projectHandler.DeleteProject)
 	r.PUT("/projects/edit/:id", projectHandler.EditProject)
-	r.POST("/projects/start/:id", projectHandler.StartProjectLocal)
+
+	// Scripts
+	r.POST("/scripts", startupHandler.NewScript)
+	r.POST("/scripts/start/:id", startupHandler.StartProjectLocal)
 
 	return r
 }

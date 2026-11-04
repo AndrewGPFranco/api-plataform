@@ -3,9 +3,7 @@ package projects
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"os/exec"
 	"sync"
 	"time"
 
@@ -90,20 +88,4 @@ func (s *ProjectService) DeleteProject(id uuid.UUID) error {
 
 func (s *ProjectService) EditProject(req *dtos.EditProject) error {
 	return s.repo.EditProject(req)
-}
-
-func (s *ProjectService) StartProjectLocalhost(ctx context.Context, id uuid.UUID) (string, error) {
-	command, err := s.repo.FindCommandByProjectID(ctx, id)
-	if err != nil {
-		fmt.Println("Não foi possível encontrar o comando para a subida do projeto.")
-		return "Não foi possível encontrar o comando para a subida do projeto.", err
-	}
-
-	out, err := exec.Command("sh", "-c", *command).CombinedOutput()
-	if err != nil {
-		log.Printf("Erro ao subir a aplicação: %v\nsaida: %s", err, out)
-		return "Não foi possível iniciar o ambiente local.", err
-	}
-	fmt.Println(string(out))
-	return "Ambiente local inicializado.", nil
 }

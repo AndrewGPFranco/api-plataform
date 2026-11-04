@@ -77,16 +77,3 @@ func (h *ProjectHandler) EditProject(c *gin.Context) {
 
 	c.JSON(http.StatusOK, "Metadados atualizados.")
 }
-
-func (h *ProjectHandler) StartProjectLocal(c *gin.Context) {
-	id := c.Param("id")
-	idParse := uuid.MustParse(id)
-
-	response, err := h.service.StartProjectLocalhost(c, idParse)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
-
-	c.JSON(http.StatusOK, response)
-}
