@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(projectHandler *handler.ProjectHandler) *gin.Engine {
+func New(projectHandler *handler.ProjectHandler, startupHandler *handler.StartupScriptHandler) *gin.Engine {
 	r := gin.Default()
 
 	r.POST("/projects", projectHandler.CreateProject)

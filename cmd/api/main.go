@@ -24,8 +24,11 @@ func main() {
 	projectRepo := projects.NewProjectRepository(db)
 	projectService := projects2.NewProjectService(projectRepo)
 	projectHandler := handler.New(projectService)
+	startupScriptRepo := projects.NewStartupScriptRepository(db)
+	startupScriptService := projects2.NewStartupScriptService(startupScriptRepo)
+	startupScriptHandler := handler.NewStartupScriptHandler(startupScriptService)
 
-	r := router.New(projectHandler)
+	r := router.New(projectHandler, startupScriptHandler)
 	if err := r.Run(":" + cfg.Port); err != nil {
 		log.Fatal(err)
 	}
