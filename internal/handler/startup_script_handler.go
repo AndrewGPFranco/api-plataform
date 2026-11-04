@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+
 	"plataform/internal/dtos/scripts"
 	services "plataform/internal/service/projects"
 
@@ -26,7 +27,6 @@ func (h *StartupScriptHandler) NewScript(context *gin.Context) {
 	}
 
 	resposta, err := h.service.NewScript(context, req)
-
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

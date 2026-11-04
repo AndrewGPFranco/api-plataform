@@ -5,6 +5,7 @@ create table startup_script
     project_id     uuid        not null unique references projects (id) on delete cascade,
     path_project   text,
     script         text,
+    title text,
     created_at     timestamptz not null default now(),
     updated_at     timestamptz not null default now()
 );
