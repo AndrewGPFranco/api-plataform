@@ -2,13 +2,15 @@ package projects
 
 import (
 	"time"
-	"uuid"
+
+	"github.com/google/uuid"
 )
 
 type Startup struct {
-	ProjectID     uuid.UUID `json:"project_id"`
-	PathProject   *string   `json:"path_project"`
-	StartupScript *string   `json:"startup_script"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	ProjectID   uuid.UUID `json:"project_id"`
+	PathProject *string   `json:"path_project"`
+	Script      *string   `json:"script"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
