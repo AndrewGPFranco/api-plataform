@@ -54,7 +54,7 @@ func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Pr
 		go func(i int, project model.Project) {
 			defer wg.Done()
 
-			scripts := s.repoScript.FindCommandByProjectID(ctx, project.ID)
+			scripts, _ := s.repoScript.FindScriptsByProjectID(ctx, project.ID)
 			tratado[i] = dtos.FromEntity(project, isOnline(ctx, client, project.LocalhostURL), scripts)
 		}(i, currents[i])
 	}

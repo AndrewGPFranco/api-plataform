@@ -43,3 +43,31 @@ func (r *StartupScriptRepository) FindCommandByProjectID(ctx context.Context, id
 
 	return command, path, nil
 }
+
+func (r *StartupScriptRepository) FindScriptsByProjectID(ctx context.Context, id uuid.UUID) ([]scripts.OutputScripts, error) {
+	rows, err := r.db.QueryContext(ctx, `select script, path_project from startup_script where project_id = $1`, id)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	s := []scripts.OutputScripts{}
+
+	for rows.Next() {
+		var scriptAtual scripts.OutputScripts
+
+		if err := rows.Scan(&scriptAtual.Command, &scriptAtual.Path); err != nil {
+			return nil, err
+		}
+
+		s = append(s, scriptAtual)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return s, nil
+}
