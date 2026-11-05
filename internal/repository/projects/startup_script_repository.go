@@ -32,9 +32,9 @@ func NewStartupScriptRepository(db *sql.DB) *StartupScriptRepository {
 	return &StartupScriptRepository{db: db}
 }
 
-func (r *StartupScriptRepository) FindCommandByProjectID(ctx context.Context, id uuid.UUID) (command *string, path *string, err error) {
+func (r *StartupScriptRepository) FindCommandByProjectIDAndPath(ctx context.Context, id uuid.UUID, p string) (command *string, path *string, err error) {
 	err = r.db.QueryRowContext(ctx,
-		`select script, path_project from startup_script where project_id = $1`, id,
+		`select script, path_project from startup_script where project_id = $1 and path_project = $2`, id, p,
 	).Scan(&command, &path)
 	if err != nil {
 		log.Println(err)
@@ -45,7 +45,7 @@ func (r *StartupScriptRepository) FindCommandByProjectID(ctx context.Context, id
 }
 
 func (r *StartupScriptRepository) FindScriptsByProjectID(ctx context.Context, id uuid.UUID) ([]scripts.OutputScripts, error) {
-	rows, err := r.db.QueryContext(ctx, `select script, path_project from startup_script where project_id = $1`, id)
+	rows, err := r.db.QueryContext(ctx, `select script, path_project, title from startup_script where project_id = $1`, id)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -58,7 +58,7 @@ func (r *StartupScriptRepository) FindScriptsByProjectID(ctx context.Context, id
 	for rows.Next() {
 		var scriptAtual scripts.OutputScripts
 
-		if err := rows.Scan(&scriptAtual.Command, &scriptAtual.Path); err != nil {
+		if err := rows.Scan(&scriptAtual.Command, &scriptAtual.Path, &scriptAtual.Title); err != nil {
 			return nil, err
 		}
 

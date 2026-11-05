@@ -33,7 +33,7 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProject
 		return nil, err
 	}
 
-	projects, err := handleProjects(ctx, projectsCurrents)
+	projects, err := s.handleProjects(ctx, projectsCurrents)
 	if err != nil {
 		fmt.Printf("Erro ao parsear o DTO para entidade %v", err)
 		return projects, nil

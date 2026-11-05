@@ -37,9 +37,10 @@ func (h *StartupScriptHandler) NewScript(context *gin.Context) {
 
 func (h *StartupScriptHandler) StartProjectLocal(c *gin.Context) {
 	id := c.Param("id")
+	path := c.Param("path")
 	idParse := uuid.MustParse(id)
 
-	response, err := h.service.StartProjectLocalhost(c, idParse)
+	response, err := h.service.StartProjectLocalhost(c, idParse, path)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, response)
 		return

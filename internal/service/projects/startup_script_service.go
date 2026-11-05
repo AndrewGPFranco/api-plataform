@@ -30,8 +30,8 @@ func (s *StartupScriptService) NewScript(ctx context.Context, dto scripts.InputS
 	return "Script salvo com sucesso", nil
 }
 
-func (s *StartupScriptService) StartProjectLocalhost(ctx context.Context, id uuid.UUID) (string, error) {
-	command, path, err := s.repo.FindCommandByProjectID(ctx, id)
+func (s *StartupScriptService) StartProjectLocalhost(ctx context.Context, id uuid.UUID, p string) (string, error) {
+	command, path, err := s.repo.FindCommandByProjectIDAndPath(ctx, id, p)
 	if err != nil || command == nil {
 		fmt.Println("Não foi possível encontrar o comando para a subida do projeto.")
 		return "Não foi possível encontrar o comando para a subida do projeto.", err

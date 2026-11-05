@@ -17,7 +17,7 @@ func New(projectHandler *handler.ProjectHandler, startupHandler *handler.Startup
 
 	// Scripts
 	r.POST("/scripts", startupHandler.NewScript)
-	r.POST("/scripts/start/:id", startupHandler.StartProjectLocal)
+	r.POST("/scripts/start/:id/*path", startupHandler.StartProjectLocal)
 
 	return r
 }
