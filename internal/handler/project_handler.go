@@ -15,7 +15,7 @@ type ProjectHandler struct {
 	service *services.ProjectService
 }
 
-func New(service *services.ProjectService) *ProjectHandler {
+func NewProjectHandler(service *services.ProjectService) *ProjectHandler {
 	return &ProjectHandler{service: service}
 }
 
