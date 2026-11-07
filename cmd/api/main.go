@@ -15,6 +15,8 @@ import (
 func main() {
 	cfg := config.Load()
 
+	scriptsEmExecucao := proj_services.NewScriptsEmExecucao()
+
 	db, err := database.Connect(cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("erro ao conectar no banco: %v", err)
@@ -23,9 +25,9 @@ func main() {
 
 	projectRepo := proj_repos.NewProjectRepository(db)
 	startupScriptRepo := proj_repos.NewStartupScriptRepository(db)
-	startupScriptService := proj_services.NewStartupScriptService(startupScriptRepo)
+	startupScriptService := proj_services.NewStartupScriptService(startupScriptRepo, scriptsEmExecucao)
 	startupScriptHandler := handler.NewStartupScriptHandler(startupScriptService)
-	projectService := proj_services.NewProjectService(projectRepo, startupScriptRepo)
+	projectService := proj_services.NewProjectService(projectRepo, startupScriptRepo, scriptsEmExecucao)
 	projectHandler := handler.NewProjectHandler(projectService)
 
 	r := router.New(projectHandler, startupScriptHandler)

@@ -15,12 +15,13 @@ import (
 )
 
 type ProjectService struct {
-	repo       *repository.ProjectRepository
-	repoScript *repository.StartupScriptRepository
+	repo           *repository.ProjectRepository
+	repoScript     *repository.StartupScriptRepository
+	scriptExecucao *ScriptsEmExecucao
 }
 
-func NewProjectService(repo *repository.ProjectRepository, repoScript *repository.StartupScriptRepository) *ProjectService {
-	return &ProjectService{repo: repo, repoScript: repoScript}
+func NewProjectService(repo *repository.ProjectRepository, repoScript *repository.StartupScriptRepository, scriptExecucao *ScriptsEmExecucao) *ProjectService {
+	return &ProjectService{repo: repo, repoScript: repoScript, scriptExecucao: scriptExecucao}
 }
 
 func (s *ProjectService) CreateProject(ctx context.Context, project *model.Project) error {
@@ -55,6 +56,9 @@ func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Pr
 			defer wg.Done()
 
 			scripts, _ := s.repoScript.FindScriptsByProjectID(ctx, project.ID)
+			for i := range scripts {
+				scripts[i].Running = s.verificaScriptJaEmExecucao(project.ID, scripts[i].Path)
+			}
 			tratado[i] = dtos.FromEntity(project, isOnline(ctx, client, project.LocalhostURL), scripts)
 		}(i, currents[i])
 	}
@@ -90,4 +94,11 @@ func (s *ProjectService) DeleteProject(id uuid.UUID) error {
 
 func (s *ProjectService) EditProject(req *dtos.EditProject) error {
 	return s.repo.EditProject(req)
+}
+
+func (s *ProjectService) verificaScriptJaEmExecucao(idParse uuid.UUID, pathAtual *string) bool {
+	if pathAtual == nil {
+		return false
+	}
+	return s.scriptExecucao.Rodando(idParse, *pathAtual)
 }
