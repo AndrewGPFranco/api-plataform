@@ -2,8 +2,9 @@ package main
 
 import (
 	"log"
-	"plataform/internal/repository/projects"
-	projects2 "plataform/internal/service/projects"
+
+	proj_repos "plataform/internal/repository/projects"
+	proj_services "plataform/internal/service/projects"
 
 	"plataform/internal/config"
 	"plataform/internal/database"
@@ -20,11 +21,14 @@ func main() {
 	}
 	defer db.Close()
 
-	projectRepo := projects.NewProjectRepository(db)
-	projectService := projects2.NewProjectService(projectRepo)
-	projectHandler := handler.New(projectService)
+	projectRepo := proj_repos.NewProjectRepository(db)
+	startupScriptRepo := proj_repos.NewStartupScriptRepository(db)
+	startupScriptService := proj_services.NewStartupScriptService(startupScriptRepo)
+	startupScriptHandler := handler.NewStartupScriptHandler(startupScriptService)
+	projectService := proj_services.NewProjectService(projectRepo, startupScriptRepo)
+	projectHandler := handler.NewProjectHandler(projectService)
 
-	r := router.New(projectHandler)
+	r := router.New(projectHandler, startupScriptHandler)
 	if err := r.Run(":" + cfg.Port); err != nil {
 		log.Fatal(err)
 	}

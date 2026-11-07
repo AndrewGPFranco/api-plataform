@@ -15,11 +15,12 @@ import (
 )
 
 type ProjectService struct {
-	repo *repository.ProjectRepository
+	repo       *repository.ProjectRepository
+	repoScript *repository.StartupScriptRepository
 }
 
-func NewProjectService(repo *repository.ProjectRepository) *ProjectService {
-	return &ProjectService{repo: repo}
+func NewProjectService(repo *repository.ProjectRepository, repoScript *repository.StartupScriptRepository) *ProjectService {
+	return &ProjectService{repo: repo, repoScript: repoScript}
 }
 
 func (s *ProjectService) CreateProject(ctx context.Context, project *model.Project) error {
@@ -32,7 +33,7 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProject
 		return nil, err
 	}
 
-	projects, err := handleProjects(ctx, projectsCurrents)
+	projects, err := s.handleProjects(ctx, projectsCurrents)
 	if err != nil {
 		fmt.Printf("Erro ao parsear o DTO para entidade %v", err)
 		return projects, nil
@@ -41,7 +42,7 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProject
 	return projects, nil
 }
 
-func handleProjects(ctx context.Context, currents []model.Project) ([]dtos.OutputProjectList, error) {
+func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Project) ([]dtos.OutputProjectList, error) {
 	tratado := make([]dtos.OutputProjectList, len(currents))
 
 	client := &http.Client{Timeout: 3 * time.Second}
@@ -53,7 +54,8 @@ func handleProjects(ctx context.Context, currents []model.Project) ([]dtos.Outpu
 		go func(i int, project model.Project) {
 			defer wg.Done()
 
-			tratado[i] = dtos.FromEntity(project, isOnline(ctx, client, project.LocalhostURL))
+			scripts, _ := s.repoScript.FindScriptsByProjectID(ctx, project.ID)
+			tratado[i] = dtos.FromEntity(project, isOnline(ctx, client, project.LocalhostURL), scripts)
 		}(i, currents[i])
 	}
 
