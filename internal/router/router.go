@@ -11,7 +11,7 @@ func New(projectHandler *handler.ProjectHandler, startupHandler *handler.Startup
 
 	// Projects
 	r.POST("/projects", projectHandler.CreateProject)
-	r.GET("/projects", projectHandler.ListProjects)
+	r.GET("/projects/:idUser", projectHandler.ListProjects)
 	r.DELETE("/projects/delete/:id", projectHandler.DeleteProject)
 	r.PUT("/projects/edit/:id", projectHandler.EditProject)
 

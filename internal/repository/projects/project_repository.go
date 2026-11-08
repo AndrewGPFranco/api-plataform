@@ -32,13 +32,13 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Pr
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
-func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
-	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url, user_id,
-                     deploy_front_url, deploy_back_url, localhost_url, has_deploy, created_at, updated_at
-			  FROM projects
+func (r *ProjectRepository) ListProjects(ctx context.Context, idUser int64) ([]model.Project, error) {
+	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
+                     deploy_front_url, deploy_back_url, localhost_url, has_deploy, created_at, updated_at, user_id
+			  FROM projects WHERE user_id = $1
 			  ORDER BY created_at DESC`
 
-	rows, err := r.db.QueryContext(ctx, query)
+	rows, err := r.db.QueryContext(ctx, query, idUser)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, 
 		var p model.Project
 		if err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.StartedAt, &p.RepoFrontURL, &p.RepoBackURL,
-			&p.DeployFrontURL, &p.DeployBackURL, &p.LocalhostURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt,
+			&p.DeployFrontURL, &p.DeployBackURL, &p.LocalhostURL, &p.HasDeploy, &p.CreatedAt, &p.UpdatedAt, &p.UserID,
 		); err != nil {
 			return nil, err
 		}

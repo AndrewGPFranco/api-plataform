@@ -3,6 +3,8 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
+
 	dtos "plataform/internal/dtos/projects"
 
 	services "plataform/internal/service/projects"
@@ -38,14 +40,21 @@ func (h *ProjectHandler) CreateProject(c *gin.Context) {
 }
 
 func (h *ProjectHandler) ListProjects(c *gin.Context) {
-	projects, err := h.service.ListProjects(c.Request.Context())
-	if err != nil {
-		log.Printf("erro ao listar projetos: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "erro ao listar projetos"})
+	idUser := c.Param("idUser")
+
+	if i, err := strconv.ParseInt(idUser, 10, 64); err == nil {
+		projects, err := h.service.ListProjects(c.Request.Context(), i)
+		if err != nil {
+			log.Printf("erro ao listar projetos: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "erro ao listar projetos"})
+			return
+		}
+
+		c.JSON(http.StatusOK, projects)
 		return
 	}
 
-	c.JSON(http.StatusOK, projects)
+	c.JSON(http.StatusBadRequest, "Usuário não encontrado!")
 }
 
 func (h *ProjectHandler) DeleteProject(c *gin.Context) {

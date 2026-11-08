@@ -26,8 +26,8 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *model.Proje
 	return s.repo.CreateProject(ctx, project)
 }
 
-func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProjectList, error) {
-	projectsCurrents, err := s.repo.ListProjects(ctx)
+func (s *ProjectService) ListProjects(ctx context.Context, idUser int64) ([]dtos.OutputProjectList, error) {
+	projectsCurrents, err := s.repo.ListProjects(ctx, idUser)
 	if err != nil {
 		return nil, err
 	}
