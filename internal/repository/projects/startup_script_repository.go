@@ -51,7 +51,11 @@ func (r *StartupScriptRepository) FindScriptsByProjectID(ctx context.Context, id
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("erro ao fechar rows: %v", err)
+		}
+	}()
 
 	s := []scripts.OutputScripts{}
 

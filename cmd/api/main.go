@@ -21,7 +21,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("erro ao conectar no banco: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("erro ao fechar conexão com o banco: %v", err)
+		}
+	}()
 
 	projectRepo := proj_repos.NewProjectRepository(db)
 	startupScriptRepo := proj_repos.NewStartupScriptRepository(db)

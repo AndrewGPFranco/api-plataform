@@ -42,7 +42,11 @@ func (r *ProjectRepository) ListProjects(ctx context.Context, idUser int64) ([]m
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("erro ao fechar rows: %v", err)
+		}
+	}()
 
 	currentProjects := []model.Project{}
 	for rows.Next() {

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -18,8 +19,7 @@ func Connect(dsn string) (*sql.DB, error) {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
-		return nil, err
+		return nil, errors.Join(err, db.Close())
 	}
 
 	return db, nil
