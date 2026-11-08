@@ -15,6 +15,7 @@ type CreateProjectRequest struct {
 	DeployFrontURL *string `json:"deploy_front_url" binding:"omitempty,url"`
 	DeployBackURL  *string `json:"deploy_back_url" binding:"omitempty,url"`
 	LocalhostURL   *string `json:"localhost_url" binding:"omitempty,url"`
+	UserID         int64   `json:"user_id" binding:"required"`
 }
 
 func ToEntity(dto CreateProjectRequest) *projects.Project {
@@ -29,6 +30,7 @@ func ToEntity(dto CreateProjectRequest) *projects.Project {
 		DeployFrontURL: dto.DeployFrontURL,
 		DeployBackURL:  dto.DeployBackURL,
 		LocalhostURL:   dto.LocalhostURL,
+		UserID:         dto.UserID,
 	}
 
 	return project

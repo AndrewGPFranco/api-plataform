@@ -22,18 +22,18 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 
 func (r *ProjectRepository) CreateProject(ctx context.Context, project *model.Project) error {
 	query := `INSERT INTO projects (title, description, started_at, repo_front_url, repo_back_url,
-                      deploy_front_url, deploy_back_url, localhost_url)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                      deploy_front_url, deploy_back_url, localhost_url, user_id)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 			  RETURNING id, has_deploy, created_at, updated_at`
 
 	return r.db.QueryRowContext(ctx, query,
 		project.Title, project.Description, project.StartedAt, project.RepoFrontURL, project.RepoBackURL,
-		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL,
+		project.DeployFrontURL, project.DeployBackURL, project.LocalhostURL, project.UserID,
 	).Scan(&project.ID, &project.HasDeploy, &project.CreatedAt, &project.UpdatedAt)
 }
 
 func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
-	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url,
+	query := `SELECT id, title, description, started_at, repo_front_url, repo_back_url, user_id,
                      deploy_front_url, deploy_back_url, localhost_url, has_deploy, created_at, updated_at
 			  FROM projects
 			  ORDER BY created_at DESC`
