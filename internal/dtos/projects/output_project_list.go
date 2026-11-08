@@ -20,11 +20,10 @@ type OutputProjectList struct {
 	DeployBackURL  *string                 `json:"deploy_back_url"`
 	LocalhostURL   *string                 `json:"localhost_url"`
 	HasDeploy      bool                    `json:"has_deploy"`
-	IsOnline       bool                    `json:"is_online"`
 	Scripts        []scripts.OutputScripts `json:"scripts"`
 }
 
-func FromEntity(entity projects.Project, isOnline bool, scripts []scripts.OutputScripts) OutputProjectList {
+func FromEntity(entity projects.Project, scripts []scripts.OutputScripts) OutputProjectList {
 	return OutputProjectList{
 		ID:             entity.ID,
 		Title:          entity.Title,
@@ -36,7 +35,6 @@ func FromEntity(entity projects.Project, isOnline bool, scripts []scripts.Output
 		DeployBackURL:  entity.DeployBackURL,
 		LocalhostURL:   entity.LocalhostURL,
 		HasDeploy:      entity.HasDeploy,
-		IsOnline:       isOnline,
 		Scripts:        scripts,
 	}
 }

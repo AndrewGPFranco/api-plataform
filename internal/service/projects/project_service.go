@@ -3,9 +3,7 @@ package projects
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"sync"
-	"time"
 
 	dtos "plataform/internal/dtos/projects"
 	model "plataform/internal/model/projects"
@@ -46,9 +44,6 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProject
 func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Project) ([]dtos.OutputProjectList, error) {
 	tratado := make([]dtos.OutputProjectList, len(currents))
 
-	const timeoutHTTP = 3 * time.Second
-	client := &http.Client{Timeout: timeoutHTTP}
-
 	var wg sync.WaitGroup
 
 	for i := range currents {
@@ -60,33 +55,13 @@ func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Pr
 			for i := range scripts {
 				scripts[i].Running = s.verificaScriptJaEmExecucao(project.ID, scripts[i].Path)
 			}
-			tratado[i] = dtos.FromEntity(project, isOnline(ctx, client, project.LocalhostURL), scripts)
+			tratado[i] = dtos.FromEntity(project, scripts)
 		}(i, currents[i])
 	}
 
 	wg.Wait()
 
 	return tratado, nil
-}
-
-func isOnline(ctx context.Context, client *http.Client, url *string) bool {
-	if url == nil {
-		return false
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, *url, nil)
-	if err != nil {
-		return false
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return false
-	}
-
-	_ = resp.Body.Close()
-
-	return true
 }
 
 func (s *ProjectService) DeleteProject(id uuid.UUID) error {
