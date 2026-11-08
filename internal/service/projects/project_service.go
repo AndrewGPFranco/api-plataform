@@ -46,7 +46,8 @@ func (s *ProjectService) ListProjects(ctx context.Context) ([]dtos.OutputProject
 func (s *ProjectService) handleProjects(ctx context.Context, currents []model.Project) ([]dtos.OutputProjectList, error) {
 	tratado := make([]dtos.OutputProjectList, len(currents))
 
-	client := &http.Client{Timeout: 3 * time.Second}
+	const timeoutHTTP = 3 * time.Second
+	client := &http.Client{Timeout: timeoutHTTP}
 
 	var wg sync.WaitGroup
 
