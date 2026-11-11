@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"syscall"
 
 	"plataform/internal/dtos/scripts"
 	repository "plataform/internal/repository/projects"
@@ -14,7 +15,10 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrScriptEmExecucao = errors.New("script já em execução")
+var (
+	ErrScriptEmExecucao  = errors.New("script já em execução")
+	ErrScriptSemExecucao = errors.New("script não está em execução")
+)
 
 type StartupScriptService struct {
 	repo           *repository.StartupScriptRepository
@@ -35,16 +39,9 @@ func (s *StartupScriptService) NewScript(ctx context.Context, dto scripts.InputS
 }
 
 func (s *StartupScriptService) StartProjectLocalhost(ctx context.Context, id uuid.UUID, p string) (string, error) {
-	if !s.scriptExecucao.Marcar(id, p) {
+	if s.scriptExecucao.Rodando(id, p) {
 		return "Script já em execução", ErrScriptEmExecucao
 	}
-
-	iniciado := false
-	defer func() {
-		if !iniciado {
-			s.scriptExecucao.Remover(id, p)
-		}
-	}()
 
 	command, path, err := s.repo.FindCommandByProjectIDAndPath(ctx, id, p)
 	if err != nil || command == nil {
@@ -59,24 +56,38 @@ func (s *StartupScriptService) StartProjectLocalhost(ctx context.Context, id uui
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
 	if err := cmd.Start(); err != nil {
 		log.Printf("Erro ao subir a aplicação: %v", err)
 		return "Não foi possível iniciar o ambiente local.", err
 	}
 
-	iniciado = true
 	pid := cmd.Process.Pid
+
+	s.scriptExecucao.Marcar(id, p, pid)
+
 	log.Printf("Projeto %s iniciado (pid %d) com: %s", id, pid, *command)
 
 	go func() {
 		defer s.scriptExecucao.Remover(id, p)
-		if err := cmd.Wait(); err != nil {
-			log.Printf("Projeto %s (pid %d) finalizou com erro: %v", id, pid, err)
-			return
-		}
+		_ = cmd.Wait()
 		log.Printf("Projeto %s (pid %d) finalizado.", id, pid)
 	}()
 
 	return "Ambiente local inicializado.", nil
+}
+
+func (s *StartupScriptService) EncerraProcesso(id uuid.UUID, p string) (string, error) {
+	pid, ok := s.scriptExecucao.DevolvePidProcesso(id, p)
+	if !ok {
+		return "Script não está em execução", ErrScriptSemExecucao
+	}
+
+	if err := syscall.Kill(-pid, syscall.SIGTERM); err != nil {
+		log.Printf("Erro ao encerrar o projeto %s (pid %d): %v", id, pid, err)
+		return "Não foi possível encerrar o processo.", err
+	}
+
+	return "Processo encerrado.", nil
 }

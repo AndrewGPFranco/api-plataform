@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"plataform/internal/dtos/scripts"
@@ -36,15 +37,44 @@ func (h *StartupScriptHandler) NewScript(context *gin.Context) {
 }
 
 func (h *StartupScriptHandler) StartProjectLocal(c *gin.Context) {
-	id := c.Param("id")
-	path := c.Param("path")
-	idParse := uuid.MustParse(id)
-
-	response, err := h.service.StartProjectLocalhost(c, idParse, path)
+	idParse, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id inválido"})
 		return
 	}
 
-	c.JSON(http.StatusOK, response)
+	response, err := h.service.StartProjectLocalhost(c, idParse, c.Param("path"))
+	if err != nil {
+		c.JSON(statusDoErroScript(err), gin.H{"message": response})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": response})
+}
+
+func (h *StartupScriptHandler) EncerraProjetoLocal(c *gin.Context) {
+	idParse, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "id inválido"})
+		return
+	}
+
+	response, err := h.service.EncerraProcesso(idParse, c.Param("path"))
+	if err != nil {
+		c.JSON(statusDoErroScript(err), gin.H{"message": response})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": response})
+}
+
+func statusDoErroScript(err error) int {
+	switch {
+	case errors.Is(err, services.ErrScriptEmExecucao):
+		return http.StatusConflict
+	case errors.Is(err, services.ErrScriptSemExecucao):
+		return http.StatusNotFound
+	default:
+		return http.StatusInternalServerError
+	}
 }
